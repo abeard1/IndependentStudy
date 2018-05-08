@@ -5,7 +5,7 @@ import time
 
 
 def build_year(year):
-    file_read = 'raw_data/raw_data_{}.csv'.format(year)
+    file_read = 'pruned_data/pruned_data_{}.csv'.format(year)
     df_actual = pd.read_csv(file_read)
 
     # reformat so triangle generator can differentiate
@@ -42,6 +42,8 @@ def build_year(year):
     # apply above tests to all rows
 
     stats_per_min = ['pts_per_min', 'trb_per_min', 'ast_per_min', 'blk_per_min', 'stl_per_min']
+
+    print('{} num of rows: {}'.format(year, len(df_possible)))    
 
     for index, row in df_possible.iterrows():
         if index % 1000 == 0:

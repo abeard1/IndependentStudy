@@ -5,6 +5,7 @@ import time
 
 
 def build_year(year):
+    print('start')
     file_read = 'pruned_data/pruned_data_{}.csv'.format(year)
     df_actual = pd.read_csv(file_read)
 
@@ -27,6 +28,8 @@ def build_year(year):
 
     defense_list = []
     player_list = []
+
+    print('build combos')
 
     for defense in df_actual['defense'].unique():
         for player in df_actual['player'].unique():

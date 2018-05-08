@@ -66,7 +66,7 @@ def build_year(year):
 
     # save csv
     file_name = 'df_possibles/df_possible_{}.csv'.format(year)
-    player_df.to_csv(file_name, index=False)
+    df_possible.to_csv(file_name, index=False)
 
 
 years = [2015, 2016, 2017]

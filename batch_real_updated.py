@@ -4,6 +4,9 @@ import numpy as np
 import time
 import operator
 
+# holds different selection methods and triangle generator
+import fitting
+
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 
@@ -14,7 +17,7 @@ random_forest = RandomForestRegressor()
 # RUN
 
 import random
-test_fraction = 0.1
+test_fraction = 0.05
 num_iterations = 3
 
 years = [2015, 2016, 2017]
@@ -23,7 +26,7 @@ stats = ['pts_per_min', 'trb_per_min', 'ast_per_min', 'blk_per_min', 'stl_per_mi
 
 
 for year in years:
-    df_full = pd.read_csv('df_actuals/actual_df_{}.csv'.format(year))
+    df_full = pd.read_csv('df_actuals/df_actual_{}.csv'.format(year))
     
 
     for i in range(num_iterations):
@@ -84,10 +87,22 @@ for year in years:
                 
                 # base arr is same for all treatments
                 triangle_list = fitting.generate_triangles(G_train, row['defense'], row['player'], stat)
-                triangle_arr = sort_triangles(triangle_list)
+                
+                # if <10 (because of diffs between G_full and G_train) -> leave out, test data will still be consistent
+                if len(triangle_list) < 10:
+                    continue
+                
+                triangle_arr = fitting.sort_triangles(triangle_list)
                 
                 for treatment in fitting.treatments:
                     x = fitting.route_treatment(triangle_arr, treatment)
+                    
+                    #if x == 'NAN':
+                    #    print(row['defense'])
+                    #    print(row['player'])
+                    #    print('tlist with G_train: {}'.format(triangle_list))
+                    #    withfull = fitting.generate_triangles(G_full, row['defense'], row['player'], stat)
+                    #    print('tlist with G_full: {}'.format(withfull))
                 
                     # only add x,y to list if x actually returned value
                     if type(x) == np.ndarray:
@@ -130,7 +145,7 @@ for year in years:
                 
                 # base arr is same for all treatments
                 triangle_list = fitting.generate_triangles(G_full, row['defense'], row['player'], stat)
-                triangle_arr = sort_triangles(triangle_list)
+                triangle_arr = fitting.sort_triangles(triangle_list)
                 
                 for treatment in fitting.treatments:
                     x = fitting.route_treatment(triangle_arr, treatment)
@@ -154,7 +169,7 @@ for year in years:
                     
             # train models and use to predict test_y
             for treatment in fitting.treatments:
-                print('fitting linreg')
+                print('fitting linreg {}'.format(treatment))
                 print(time.time())
             
                 lin_reg.fit(train_x_actual[treatment], train_y_actual[treatment])
@@ -179,9 +194,9 @@ for year in years:
             data_dict['label'] = test_y_labels
             
             for treatment in fitting.treatments:
-                data_dict['linreg_{}'.format(treatment)] = lin_reg_y_pred[treatment]
+                data_dict['linreg_{}'.format(treatment)] = lin_reg_y_pred[treatment].ravel()
                 data_dict['rf_{}'.format(treatment)] = random_forest_y_pred[treatment]
-                data_dict['actual_{}'.format(treatment)] = test_y_actual[treatment]
+                data_dict['actual_{}'.format(treatment)] = test_y_actual[treatment].ravel()
 
             
             # build df

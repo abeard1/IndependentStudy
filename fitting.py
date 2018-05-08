@@ -47,7 +47,9 @@ def sort_triangles(triangle_list):
     return np.array(raw_list)
 
 def split_chunks(triangle_arr, num_chunks):
-    return np.array_split(triangle_arr, num_chunks
+    split = np.array_split(triangle_arr, num_chunks)
+
+    return split
 
 def chunk_medians(chunks):
     medians_list = [np.median(chunk) for chunk in chunks]
@@ -61,24 +63,29 @@ def route_treatment(triangle_arr, treatment):
     mean = np.mean(triangle_arr)
     median = np.median(triangle_arr)
 
-    null_arr = np.arr([mean, median])
+    null_arr = np.array([mean, median])
+
+    #if np.isnan(mean) or np.isnan(median):
+    #    print('NAN FOUND')
+    #    print(triangle_arr)
+    #    return 'NAN'
 
     if treatment == 'null':
         return null_arr 
 
-    if treatment = 'median_5':
+    if treatment == 'median_5':
         chunks = split_chunks(triangle_arr, 5)
         add = chunk_medians(chunks)
         return np.append(null_arr, add)
-    elif treatment = 'median_10':  
+    elif treatment == 'median_10':  
         chunks = split_chunks(triangle_arr, 10)
         add = chunk_medians(chunks)
         return np.append(null_arr, add)  
-    elif treatment = 'mean_5':  
+    elif treatment == 'mean_5':  
         chunks = split_chunks(triangle_arr, 5)
         add = chunk_medians(chunks)
         return np.append(null_arr, add)  
-    elif treatment = 'mean_10':
+    elif treatment == 'mean_10':
         chunks = split_chunks(triangle_arr, 5)
         add = chunk_medians(chunks)
         return np.append(null_arr, add)
